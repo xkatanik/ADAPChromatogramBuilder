@@ -44,7 +44,7 @@ public class Main {
 
         Options options = setOptions();
 
-        if(args.length == 0){
+        if (args.length == 0) {
             HelpFormatter helpFormatter = new HelpFormatter();
             helpFormatter.setOptionComparator(null);
             helpFormatter.printHelp("ADAP Chromatogram builder module help.", options);
@@ -53,10 +53,10 @@ public class Main {
 
         CommandLine commandLine;
         try {
-            commandLine = new DefaultParser().parse(options,args);
-        } catch (ParseException e){
-            for(String arg: args){
-                if(arg.equals("-h") || arg.equals("--help")){
+            commandLine = new DefaultParser().parse(options, args);
+        } catch (ParseException e) {
+            for (String arg : args) {
+                if (arg.equals("-h") || arg.equals("--help")) {
                     HelpFormatter helpFormatter = new HelpFormatter();
                     helpFormatter.setOptionComparator(null);
                     helpFormatter.printHelp("ADAP Chromatogram builder module help.", options);
@@ -71,23 +71,23 @@ public class Main {
         outputFileName = commandLine.getOptionValue("o");
         try {
             minScanSpan = Double.parseDouble(commandLine.getOptionValue("mss"));
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.err.println("Wrong format of minScanSpan value. Value has to be number in double format.");
             return;
         }
         try {
             intensityThreshold = Double.parseDouble(commandLine.getOptionValue("it"));
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.err.println("Wrong format of intensityThreshold value. Value has to be number in double format.");
             return;
         }
         try {
             startIntensity = Double.parseDouble(commandLine.getOptionValue("si"));
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.err.println("Wrong format of startIntensity value. Value has to be number in double format.");
             return;
         }
-        if(commandLine.hasOption("mz")){
+        if (commandLine.hasOption("mz")) {
             try {
                 mz = Double.parseDouble(commandLine.getOptionValue("mz"));
             } catch (NumberFormatException e) {
@@ -95,7 +95,7 @@ public class Main {
                 return;
             }
         }
-        if(commandLine.hasOption("ppm")){
+        if (commandLine.hasOption("ppm")) {
             try {
                 ppm = Double.parseDouble(commandLine.getOptionValue("ppm"));
             } catch (NumberFormatException e) {
@@ -103,7 +103,6 @@ public class Main {
                 return;
             }
         }
-
 
 
         File inputFile;
@@ -117,13 +116,13 @@ public class Main {
         File outputFile;
         try {
             outputFile = new File(outputFileName);
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to create/load ouput file.");
             return;
         }
 
-        if(!inputFile.exists() || inputFile.isDirectory()){
+        if (!inputFile.exists() || inputFile.isDirectory()) {
             System.err.println("Unable to load input/output file.");
             return;
         }
@@ -133,7 +132,7 @@ public class Main {
         final MZmineProject mZmineProject = new MZmineProjectImpl();
         RawDataFileImpl rawDataFile = new RawDataFileImpl(inputFile.getName());
 
-        NetCDFReadTask netCDFReadTask = new NetCDFReadTask(mZmineProject,inputFile,rawDataFile);
+        NetCDFReadTask netCDFReadTask = new NetCDFReadTask(mZmineProject, inputFile, rawDataFile);
         netCDFReadTask.run();
 
         MZmineConfiguration configuration = new MZmineConfigurationImpl();
@@ -151,13 +150,13 @@ public class Main {
 
         ADAPChromatogramBuilderParameters parameters = setParameters(minScanSpan, intensityThreshold, startIntensity, mz, ppm);
 
-        ADAPChromatogramBuilderTask adapChromatogramBuilderTask = new ADAPChromatogramBuilderTask(mZmineProject,rawDataFile,parameters);
+        ADAPChromatogramBuilderTask adapChromatogramBuilderTask = new ADAPChromatogramBuilderTask(mZmineProject, rawDataFile, parameters);
         adapChromatogramBuilderTask.run();
 
         saveData(outputFile);
     }
 
-    private static Options setOptions(){
+    private static Options setOptions() {
         Options options = new Options();
         options.addOption(Option.builder("i").required().hasArg().longOpt("inputFile").desc("[required] Name or path of input file. Type .CDF").build());
         options.addOption(Option.builder("o").required().hasArg().longOpt("outputFile").desc("[required] Name or path of output file. File name must end with .MPL").build());
@@ -177,7 +176,7 @@ public class Main {
 
     }
 
-    private static RawDataFile loadMassDetectionData(RawDataFileImpl rawDataFile){
+    private static RawDataFile loadMassDetectionData(RawDataFileImpl rawDataFile) {
 
         int[] scanNumbers = rawDataFile.getScanNumbers();
         for (int scanNumber : scanNumbers) {
@@ -188,7 +187,7 @@ public class Main {
         return rawDataFile;
     }
 
-    private static ADAPChromatogramBuilderParameters setParameters(Double minScanSpan, Double intensityThreshold, Double startIntensity, Double mz, Double ppm){
+    private static ADAPChromatogramBuilderParameters setParameters(Double minScanSpan, Double intensityThreshold, Double startIntensity, Double mz, Double ppm) {
 
         ADAPChromatogramBuilderParameters parameters = new ADAPChromatogramBuilderParameters();
         parameters.getParameter(ADAPChromatogramBuilderParameters.scanSelection).setValue(new ScanSelection());
@@ -199,12 +198,12 @@ public class Main {
         parameters.getParameter(ADAPChromatogramBuilderParameters.minimumScanSpan).setValue(minScanSpan);
         parameters.getParameter(ADAPChromatogramBuilderParameters.IntensityThresh2).setValue(intensityThreshold);
         parameters.getParameter(ADAPChromatogramBuilderParameters.startIntensity).setValue(startIntensity);
-        parameters.getParameter(ADAPChromatogramBuilderParameters.mzTolerance).setValue(new MZTolerance(mz,ppm));
+        parameters.getParameter(ADAPChromatogramBuilderParameters.mzTolerance).setValue(new MZTolerance(mz, ppm));
 
         return parameters;
     }
 
-    private static void saveData(File outputFile){
+    private static void saveData(File outputFile) {
 
         PeakListsSelection peakListsSelection = new PeakListsSelection();
         peakListsSelection.setSelectionType(PeakListsSelectionType.ALL_PEAKLISTS);
@@ -218,8 +217,6 @@ public class Main {
         xmlExportTask.run();
 
     }
-
-
 
 
 }
