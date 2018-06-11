@@ -43,11 +43,14 @@ public class Main {
         Double ppm = 5.0;
 
         Options options = setOptions();
+        String header = "";
+        String footer = "Created by Kristian Katanik, version 1.1.";
 
         if (args.length == 0) {
             HelpFormatter helpFormatter = new HelpFormatter();
             helpFormatter.setOptionComparator(null);
-            helpFormatter.printHelp("ADAP Chromatogram builder module help.", options);
+            helpFormatter.printHelp("ADAP Chromatogram builder module help.", header, options, footer, true);
+            System.exit(1);
             return;
         }
 
@@ -59,11 +62,13 @@ public class Main {
                 if (arg.equals("-h") || arg.equals("--help")) {
                     HelpFormatter helpFormatter = new HelpFormatter();
                     helpFormatter.setOptionComparator(null);
-                    helpFormatter.printHelp("ADAP Chromatogram builder module help.", options);
+                    helpFormatter.printHelp("ADAP Chromatogram builder module help.", header, options, footer, true);
+                    System.exit(1);
                     return;
                 }
             }
             System.err.println("Some of the required parameters or their arguments are missing. Use -h or --help for help.");
+            System.exit(1);
             return;
         }
 
@@ -73,18 +78,21 @@ public class Main {
             minScanSpan = Double.parseDouble(commandLine.getOptionValue("mss"));
         } catch (NumberFormatException e) {
             System.err.println("Wrong format of minScanSpan value. Value has to be number in double format.");
+            System.exit(1);
             return;
         }
         try {
             intensityThreshold = Double.parseDouble(commandLine.getOptionValue("it"));
         } catch (NumberFormatException e) {
             System.err.println("Wrong format of intensityThreshold value. Value has to be number in double format.");
+            System.exit(1);
             return;
         }
         try {
             startIntensity = Double.parseDouble(commandLine.getOptionValue("si"));
         } catch (NumberFormatException e) {
             System.err.println("Wrong format of startIntensity value. Value has to be number in double format.");
+            System.exit(1);
             return;
         }
         if (commandLine.hasOption("mz")) {
@@ -92,6 +100,7 @@ public class Main {
                 mz = Double.parseDouble(commandLine.getOptionValue("mz"));
             } catch (NumberFormatException e) {
                 System.err.println("Wrong format of mz value. Value has to be number in integer format.");
+                System.exit(1);
                 return;
             }
         }
@@ -100,6 +109,7 @@ public class Main {
                 ppm = Double.parseDouble(commandLine.getOptionValue("ppm"));
             } catch (NumberFormatException e) {
                 System.err.println("Wrong format of ppm value. Value has to be number in integer format.");
+                System.exit(1);
                 return;
             }
         }
@@ -111,6 +121,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to load input file.");
+            System.exit(1);
             return;
         }
         File outputFile;
@@ -119,11 +130,13 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Unable to create/load ouput file.");
+            System.exit(1);
             return;
         }
 
         if (!inputFile.exists() || inputFile.isDirectory()) {
             System.err.println("Unable to load input/output file.");
+            System.exit(1);
             return;
         }
 
